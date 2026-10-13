@@ -1,0 +1,30 @@
+/* CFG membership check
+       S -> 0S0 | 1S1 | 0 | 1 | epsilon
+   Language: all binary palindromes (including the empty string).
+   Recursive check of the substring in[lo..hi] (inclusive) that mirrors the rules. */
+#include <stdio.h>
+#include <string.h>
+
+int S(const char *in, int lo, int hi) {
+    if (lo > hi) return 1;                       /* S -> epsilon */
+    if (lo == hi) return in[lo]=='0' || in[lo]=='1';   /* S -> 0 | 1 */
+    if (in[lo] == in[hi])                        /* S -> 0S0 | 1S1 */
+        return S(in, lo + 1, hi - 1);
+    return 0;
+}
+
+int main(void) {
+    char str[1000] = "";
+    printf("Enter a string over {0,1} (press Enter alone for empty string): ");
+    if (!fgets(str, sizeof str, stdin)) return 1;
+    str[strcspn(str, "\r\n")] = '\0';
+    for (size_t i = 0; str[i]; i++)
+        if (str[i] != '0' && str[i] != '1') {
+            printf("Invalid symbol '%c'.\n", str[i]);
+            return 1;
+        }
+    printf(S(str, 0, (int)strlen(str) - 1)
+           ? "String BELONGS to the language of the CFG\n"
+           : "String does NOT belong to the language of the CFG\n");
+    return 0;
+}
